@@ -34,6 +34,15 @@ START-OF-SELECTION.
 
     gs_emp_master-empid = p_empid. "accede a la tabla y almacena el dato
 
+    "establece valores iniciales por defecto del campo 'Gender'
+    IF gs_emp_master-gender = 'M'.
+        R_M = 'X'.
+      ELSEIF GS_EMP_MASTER-gender = 'F'.
+        R_F = 'X'.
+      ELSE.
+        
+      ENDIF.
+
     CALL SCREEN 0100. "asigna SCREEN PAINTER 0100
 
 
@@ -89,6 +98,15 @@ FORM save . "indica lo que hace la funcion SAVE
      gs_emp_master-createdby = sy-uzeit.
   ENDIF.
 
+  "Si 'Gender' no está iniciado:
+  IF R_M IS NOT INITIAL.
+    GS_EMP_MASTER-GENDER = 'M'.
+  ELSEIF R_F IS NOT INITIAL.
+    GS_EMP_MASTER-GENDER = 'F'.
+  ELSE.
+    CLEAR: GS_EMP_MASTER-GENDER.
+  ENDIF.
+  
   MODIFY zzemp_master_ybc FROM gs_emp_master. 
 
     MESSAGE 'Data saved successfully' TYPE 'S'. "Mensaje despues de haber guardado
