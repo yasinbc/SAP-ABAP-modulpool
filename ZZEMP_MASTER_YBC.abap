@@ -1,41 +1,33 @@
-*FLOW LOGIC
-
-PROCESS BEFORE OUTPUT.
- MODULE STATUS_0100.
-
-PROCESS AFTER INPUT.
- MODULE USER_COMMAND_0100.
-
-
- MODULE EXT AT EXIT-COMMAND.
-
-
-
- 
-
- *&---------------------------------------------------------------------*
+*&---------------------------------------------------------------------*
 *& Report ZZEMP_MASTER_YBC
 *&---------------------------------------------------------------------*
 *&
 *&---------------------------------------------------------------------*
-REPORT ZZEMP_MASTER_YBC.
+REPORT zzemp_master_ybc.
 
-tables: ZZEMP_MASTER_YBC.
+TABLES: zzemp_master_ybc.
 
-data: gs_emp_master type ZZEMP_MASTER_YBC.
-data: gv_flag type flag.
+DATA: gs_emp_master TYPE zzemp_master_ybc.
+DATA: gv_flag TYPE flag.
 
-SELECTION-SCREEN begin of BLOCK b1 WITH FRAME TITLE text-001.
-  PARAMETERS : P_EMPID TYPE ZZEMP_MASTER_YBC-empid OBLIGATORY.
-SELECTION-SCREEN end of BLOCK b1.
+
+DATA: R_M, "Male
+      R_F, "Female
+      R_U. "Unknown
+
+
+
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE TEXT-001.
+  PARAMETERS : p_empid TYPE zzemp_master_ybc-empid OBLIGATORY.
+SELECTION-SCREEN END OF BLOCK b1.
 
 START-OF-SELECTION.
-  SELECT SINGLE * FROM ZZEMP_MASTER_YBC INTO CORRESPONDING FIELDS OF gs_emp_master
-  WHERE EMPID = p_empid.
+  SELECT SINGLE * FROM zzemp_master_ybc INTO CORRESPONDING FIELDS OF gs_emp_master
+  WHERE empid = p_empid.
 
-    GS_EMP_MASTER-EMPID = p_empid.
+    gs_emp_master-empid = p_empid.
 
-    call SCREEN 0100.
+    CALL SCREEN 0100.
 
 
 
@@ -64,14 +56,14 @@ ENDMODULE.
 *----------------------------------------------------------------------*
 MODULE user_command_0100 INPUT.
 
-  CASE SY-ucomm.
+  CASE sy-ucomm.
   WHEN 'BACK' OR 'EXIT' OR 'CANCEL'.
     SET SCREEN 0.
   WHEN 'SAVE'.
-    PERFORM SAVE.
+    PERFORM save.
   ENDCASE.
 
-  CLEAR : SY-ucomm.
+  CLEAR : sy-ucomm.
 
 
 ENDMODULE.
@@ -84,13 +76,13 @@ ENDMODULE.
 *& <--  p2        text
 *&---------------------------------------------------------------------*
 FORM save .
-  IF GS_EMP_MASTER-createdby IS INITIAL.
-     GS_EMP_MASTER-createdby = SY-UNAME.
-     GS_EMP_MASTER-createdby = SY-DATUM.
-     GS_EMP_MASTER-createdby = SY-UZEIT.
+  IF gs_emp_master-createdby IS INITIAL.
+     gs_emp_master-createdby = sy-uname.
+     gs_emp_master-createdby = sy-datum.
+     gs_emp_master-createdby = sy-uzeit.
   ENDIF.
 
-  MODIFY zzemp_master_ybc FROM GS_EMP_MASTER.
+  MODIFY zzemp_master_ybc FROM gs_emp_master.
 
     MESSAGE 'Data saved successfully' TYPE 'S'.
       SET SCREEN 0.
