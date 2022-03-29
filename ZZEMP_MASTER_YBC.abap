@@ -3,11 +3,12 @@
 *&---------------------------------------------------------------------*
 *&
 *&---------------------------------------------------------------------*
-REPORT zzemp_master_ybc.
+REPORT zzemp_master_ybc. "nombre modulpool
 
-TABLES: zzemp_master_ybc.
+TABLES: zzemp_master_ybc. "nombre tabla donde se almacenan datos en BBDD
 
-DATA: gs_emp_master TYPE zzemp_master_ybc.
+
+DATA: gs_emp_master TYPE zzemp_master_ybc. "tabla donde se copian los datos
 DATA: gv_flag TYPE flag.
 
 
@@ -18,16 +19,16 @@ DATA: R_M, "Male
 
 
 SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE TEXT-001.
-  PARAMETERS : p_empid TYPE zzemp_master_ybc-empid OBLIGATORY.
+  PARAMETERS : p_empid TYPE zzemp_master_ybc-empid OBLIGATORY. "pantalla de inicio del programa
 SELECTION-SCREEN END OF BLOCK b1.
 
 START-OF-SELECTION.
-  SELECT SINGLE * FROM zzemp_master_ybc INTO CORRESPONDING FIELDS OF gs_emp_master
-  WHERE empid = p_empid.
+  SELECT SINGLE * FROM zzemp_master_ybc INTO CORRESPONDING FIELDS OF gs_emp_master "seleccion de tabla maestra en copia
+  WHERE empid = p_empid. "asigna el campo p_empid a empid
 
-    gs_emp_master-empid = p_empid.
+    gs_emp_master-empid = p_empid. "accede a la tabla y almacena el dato
 
-    CALL SCREEN 0100.
+    CALL SCREEN 0100. "asigna SCREEN PAINTER 0100
 
 
 
@@ -54,16 +55,16 @@ ENDMODULE.
 *&---------------------------------------------------------------------*
 *       text
 *----------------------------------------------------------------------*
-MODULE user_command_0100 INPUT.
+MODULE user_command_0100 INPUT. "modulo PBO
 
-  CASE sy-ucomm.
-  WHEN 'BACK' OR 'EXIT' OR 'CANCEL'.
-    SET SCREEN 0.
-  WHEN 'SAVE'.
-    PERFORM save.
+  CASE sy-ucomm. "si se pulsan los botones del menu general...
+  WHEN 'BACK' OR 'EXIT' OR 'CANCEL'. "ejecuta evento BACK, EXIT o CANCEL
+    SET SCREEN 0. "te saca a la pantalla inicial del programa
+  WHEN 'SAVE'. "Si a la opcion guardar 
+    PERFORM save. "El programa guarda tus cambios
   ENDCASE.
 
-  CLEAR : sy-ucomm.
+  CLEAR : sy-ucomm. "limpia la variable SY-UCOMM
 
 
 ENDMODULE.
@@ -75,16 +76,16 @@ ENDMODULE.
 *& -->  p1        text
 *& <--  p2        text
 *&---------------------------------------------------------------------*
-FORM save .
+FORM save . "indica lo que hace la funcion SAVE
   IF gs_emp_master-createdby IS INITIAL.
      gs_emp_master-createdby = sy-uname.
      gs_emp_master-createdby = sy-datum.
      gs_emp_master-createdby = sy-uzeit.
   ENDIF.
 
-  MODIFY zzemp_master_ybc FROM gs_emp_master.
+  MODIFY zzemp_master_ybc FROM gs_emp_master. 
 
-    MESSAGE 'Data saved successfully' TYPE 'S'.
-      SET SCREEN 0.
+    MESSAGE 'Data saved successfully' TYPE 'S'. "Mensaje despues de haber guardado
+      SET SCREEN 0. "Te lleva fuera de la pantala
 
 ENDFORM.
