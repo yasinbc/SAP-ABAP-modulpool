@@ -16,6 +16,12 @@ DATA: R_M, "Male
       R_F, "Female
       R_U. "Unknown
 
+"Variables para almacenar campos del desplegable 'title' (Mr./Mrs.)
+DATA: gv_id     TYPE vrm_id,
+      gt_values TYPE vrm_values,
+      gs_values LIKE LINE OF gt_values.
+DATA: gv_init.
+
 
 
 SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE TEXT-001.
@@ -89,3 +95,28 @@ FORM save . "indica lo que hace la funcion SAVE
       SET SCREEN 0. "Te lleva fuera de la pantala
 
 ENDFORM.
+
+"Forma manual de elegir Mr/Mrs en el campo 'Title' 
+FORM set_list_box.
+
+    CLEAR: GT_VALUES[], GS_VALUES.
+  
+    gs_values-key = 'MR.'.
+    APPEND gs_values TO gt_values.
+  
+    gs_values-key = 'Mrs.'.
+    APPEND gs_values TO gt_values.
+  
+    SORT gt_values BY key.
+    DELETE ADJACENT DUPLICATES FROM gt_values COMPARING key.
+  
+    GV_ID = 'GS_EMP_MASTER-TITLE'.
+  
+    CALL FUNCTION 'VRM_SET_VALUES'
+      EXPORTING
+        ID     = GV_ID
+        VALUES = GT_VALUES.
+  
+    CLEAR: GS_VALUES, GT_VALUES[].
+  
+  ENDFORM.
